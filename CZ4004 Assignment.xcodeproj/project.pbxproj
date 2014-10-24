@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		E961A19319E6B055001180D0 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E961A19219E6B055001180D0 /* main.cpp */; };
+		E961A19A19E6EC49001180D0 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E961A19919E6EC49001180D0 /* OpenGL.framework */; };
+		E961A19C19E6EC4F001180D0 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E961A19B19E6EC4F001180D0 /* GLUT.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +27,8 @@
 /* Begin PBXFileReference section */
 		E961A18F19E6B055001180D0 /* CZ4004 Assignment */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "CZ4004 Assignment"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E961A19219E6B055001180D0 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		E961A19919E6EC49001180D0 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		E961A19B19E6EC4F001180D0 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +36,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E961A19C19E6EC4F001180D0 /* GLUT.framework in Frameworks */,
+				E961A19A19E6EC49001180D0 /* OpenGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -41,6 +47,8 @@
 		E961A18619E6B055001180D0 = {
 			isa = PBXGroup;
 			children = (
+				E961A19B19E6EC4F001180D0 /* GLUT.framework */,
+				E961A19919E6EC49001180D0 /* OpenGL.framework */,
 				E961A19119E6B055001180D0 /* CZ4004 Assignment */,
 				E961A19019E6B055001180D0 /* Products */,
 			);
@@ -202,6 +210,7 @@
 		E961A19719E6B055001180D0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -209,6 +218,7 @@
 		E961A19819E6B055001180D0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -232,6 +242,7 @@
 				E961A19819E6B055001180D0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
