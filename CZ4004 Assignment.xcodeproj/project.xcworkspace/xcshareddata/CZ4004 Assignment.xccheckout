@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>BB9856D4-B8BC-4CBA-98FC-342CBB0FF647</string>
+	<key>IDESourceControlProjectName</key>
+	<string>CZ4004 Assignment</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>AE25E742C97798534B60811EFC192AD997281F7A</key>
+		<string>https://github.com/shubham93g/CZ4004-Assignment.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>CZ4004 Assignment.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>AE25E742C97798534B60811EFC192AD997281F7A</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/shubham93g/CZ4004-Assignment.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>AE25E742C97798534B60811EFC192AD997281F7A</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>AE25E742C97798534B60811EFC192AD997281F7A</string>
+			<key>IDESourceControlWCCName</key>
+			<string>CZ4004%20Assignment</string>
+		</dict>
+	</array>
+</dict>
+</plist>

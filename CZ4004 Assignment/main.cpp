@@ -16,17 +16,22 @@
 
 using namespace std;
 
-#define TRANSFORM_NONE      0
-#define TRANSFORM_ROTATE    1
-#define TRANSFORM_SCALE     2
+//for mouse movements
+#define TRANSFORM_ROTATE    0
+#define TRANSFORM_ZOOM      1
+#define TRANSFORM_TRANSLATE 2
+#define TRANSFORM_NONE      3
 
+//rendering modes
 #define OBJ_WIREFRAME	0
 #define OBJ_SOLID		1
 #define OBJ_POINT		2
 
+//projection modes
 #define VIEW_PERS   0
 #define VIEW_ORTH   1
 
+//solid rendering variation
 #define SOLID_SMOOTH 0
 #define SOLID_FLAT 1
 
@@ -47,7 +52,7 @@ vector<Face> faces; // array of the triangles
 string const folder = "/Users/shubhamgoyal/Google Drive/Y4S1/CZ4004/Assignment/Models/";
 string const fileNames[5] = {"bunny.m","gargoyle.m","knot.m","eight.m","cap.m"};
 
-char const* WINDOW_TITLE = "U1122584C CZ4004 Assignment";
+char const* const WINDOW_TITLE = "U1122584C CZ4004 Assignment";
 int WINDOW_WIDTH = 640;
 int WINDOW_HEIGHT = 640;
 
@@ -57,17 +62,8 @@ float FIELD_LIMIT;
 //size of the units on XZ grid plane
 float UNIT_SIZE;
 
-//minimum discrete change in camera angle
-float camChange;
-
-//factor used to compute camera distance from largest vertex
-float camFactor;
-
-//change in camera's angle on XZ plane
-float lx=0.0f,lz=0.0f;
-
-// XYZ position change of the camera
-float dx,dy,dz;
+// variables for translation along X,Z plane
+float dx,dz;
 
 //XYZ position of camera
 float camX, camY, camZ;
@@ -106,7 +102,6 @@ void loadMFile(string,string);
 
 //Callback functions
 void processNormalKeys(unsigned char, int, int);
-void processSpecialKeys(int,int,int);
 void myMouse(int,int,int,int);
 void myMotion(int,int);
 void reshape(int,int);
@@ -132,7 +127,7 @@ int main(int argc, char **argv) {
     //Load File
     loadMFile(folder,fileNames[0]);
     
-    // init GLUT and create window
+    //init GLUT
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowPosition(0, 0);
@@ -150,7 +145,6 @@ int main(int argc, char **argv) {
     glutMouseFunc(myMouse);
     glutMotionFunc(myMotion);
     glutKeyboardFunc(processNormalKeys);
-    glutSpecialFunc(processSpecialKeys);
     
     // enter GLUT event processing cycle
     glutMainLoop();
@@ -174,15 +168,9 @@ void InitializeVariables(){
     
     FIELD_LIMIT = 100;
     UNIT_SIZE = 1.0;
-    camChange = 0.1;
     
-    camFactor=0.5;
+    dx=0.0f,dz=0.0f;
     
-    // actual vector representing the camera's direction
-    lx=0.0f,lz=0.0f;
-    
-    // XYZ position of the camera
-    dx=0.0f,dy=0.0f,dz=0.0f;
     camX = 0.0, camY = 0.0; camZ = 0.0;
     
     x_angle = 0.0;
@@ -203,13 +191,14 @@ void InitializeDisplay(){
     glLoadIdentity();
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     
+    //projection: perspective/orthogonal
     switch (view_mode) {
         case VIEW_PERS:
             gluPerspective(45.0, WINDOW_WIDTH/WINDOW_HEIGHT, persZn, persZf);
             break;
             
         case VIEW_ORTH:
-            glOrtho(-maxVertices[0]-dx, maxVertices[0]+dx , -maxVertices[0]-dy, maxVertices[0]+dy, orthoZn, orthoZf);
+            glOrtho(-maxVertices[0], maxVertices[0] , -maxVertices[0], maxVertices[0], orthoZn, orthoZf);
             break;
     }
     
@@ -222,6 +211,7 @@ void InitRendering(){
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_NORMALIZE);
     
+    //smooth/flat shading
     switch(solid_mode){
         case SOLID_FLAT:
             glShadeModel(GL_FLAT);
@@ -256,9 +246,13 @@ void loadMFile(string folder, string fileName)
                 if (fscanf(f,"ertex %d %f %f %f {normal=(%f %f %f)}\n", &vid, &x, &y, &z, &nx, &ny, &nz) == 7)
                 {
                     vertex = new Vertex();
+                    
+                    //vertex data
                     vertex->x = x;
                     vertex->y = y;
                     vertex->z = z;
+                    
+                    //normal data
                     vertex->nx = nx;
                     vertex->ny = ny;
                     vertex->nz = nz;
@@ -316,14 +310,20 @@ void loadMFile(string folder, string fileName)
         }
     }
     
+    //find biggest vertex value in XZ plane
     float max;
     if (maxVertices[0]>maxVertices[2])
         max = maxVertices[0];
     else
         max = maxVertices[2];
     
+    //set biggest vertex value as the limit of the XZ floor plane
     FIELD_LIMIT = max+1;
-    camChange = max/100;
+    
+    //set camera position according to size of object rendered
+    camX = maxVertices[0]/0.5;
+    camY = maxVertices[1]/0.5;
+    camZ = maxVertices[2]/0.5;
     
     cout<<"Load complete"<<endl;
     cout<<"Total Vertices "<<vertices.size()<<endl;
@@ -424,42 +424,24 @@ void processNormalKeys(unsigned char key, int x, int y) {
     glutPostRedisplay();
 }
 
-void processSpecialKeys(int key, int xx, int yy) {
-    
-    switch (key) {
-        case GLUT_KEY_LEFT : //pan left
-            lx -= camChange;
-            lz -= -camChange;
-            break;
-        case GLUT_KEY_RIGHT : //pan right
-            lx += camChange;
-            lz += -camChange;
-            break;
-        case GLUT_KEY_UP : //zoom in
-            dx -= camX/100;
-            dy -= camY/100;
-            dz -= camZ/100;
-            InitializeDisplay();
-            break;
-        case GLUT_KEY_DOWN : //zoom out
-            dx += camX/100;
-            dy += camY/100;
-            dz += camZ/100;
-            InitializeDisplay();
-            break;
-    }
-}
-
 //Mouse input
 void myMouse(int button, int state, int x, int y)
 {
     if (state == GLUT_DOWN)
     {
         press_x = x; press_y = y;
+        
+        //rotate with left click
         if (button == GLUT_LEFT_BUTTON)
             xform_mode = TRANSFORM_ROTATE;
+        
+        //translate with right click
         else if (button == GLUT_RIGHT_BUTTON)
-            xform_mode = TRANSFORM_SCALE;
+            xform_mode = TRANSFORM_TRANSLATE;
+        
+        //zoom with middle click
+        else if (button == GLUT_MIDDLE_BUTTON)
+            xform_mode = TRANSFORM_ZOOM;
     }
     else if (state == GLUT_UP)
     {
@@ -470,6 +452,7 @@ void myMouse(int button, int state, int x, int y)
 //mouse motion callback
 void myMotion(int x, int y)
 {
+    //object rotation
     if (xform_mode == TRANSFORM_ROTATE)
     {
         x_angle += (x - press_x)/5.0;
@@ -490,14 +473,26 @@ void myMotion(int x, int y)
         
         press_y = y;
     }
-    else if (xform_mode == TRANSFORM_SCALE)
+    
+    //object zoom
+    else if (xform_mode == TRANSFORM_ZOOM)
     {
         float old_size = scale_size;
         
-        scale_size *= (1 + (y - press_y)/60.0);
+        scale_size *= (1 - (y - press_y)/60.0);
         
         if (scale_size <0)
             scale_size = old_size;
+        press_y = y;
+    }
+    
+    //object translate
+    else if(xform_mode == TRANSFORM_TRANSLATE)
+    {
+        dx += (x - press_x)*maxVertices[0]/100.0;
+        press_x = x;
+        
+        dz += (y - press_y)*maxVertices[1]/100.0;
         press_y = y;
     }
     
@@ -508,6 +503,7 @@ void myMotion(int x, int y)
 //Window reshaping callback
 void reshape(int width, int height)
 {
+    //to prevent division by zero
     if (height == 0)
         height = 1;
     
@@ -527,18 +523,21 @@ void display()
     glLoadIdentity();
     
     // Set the camera
-    camX = maxVertices[0]/camFactor;
-    camY = maxVertices[1]/camFactor;
-    camZ = maxVertices[2]/camFactor;
-    gluLookAt(dx + camX, dy+ camY, dz+ camZ, //place camera to cover entire object; dx dy dz for camera movements
-              lx,0.0f,lz, //lx,lz for camera movements
+    gluLookAt(camX, camY, camZ, //place camera to cover entire object
+              (minVertices[0]+maxVertices[0])/2, (minVertices[1]+maxVertices[1])/2, (minVertices[2]+maxVertices[2])/2, //look at the centre of the object
               0.0f, 1.0f, 0.0f);
     
-    //rotate object
+    //rotate about centre of object object
     glTranslatef((minVertices[0]+maxVertices[0])/2, (minVertices[1]+maxVertices[1])/2, (minVertices[2]+maxVertices[2])/2);
     glRotatef(x_angle, 0, 1,0);
     glRotatef(y_angle, 1,0,0);
     glTranslatef(-(minVertices[0]+maxVertices[0])/2, -(minVertices[1]+maxVertices[1])/2, -(minVertices[2]+maxVertices[2])/2);
+    
+    //translate based on right click
+    glTranslatef(dx, 0, dz);
+    
+    //scale based on middle mouse movements
+    glScalef(scale_size, scale_size, scale_size);
     
     drawLightSource();
     drawBoundingBox();
@@ -662,7 +661,7 @@ void drawGrid(){
     glBegin(GL_LINES);
     glColor3f(0.4f, 0.4f, 0.4f);
     
-    //floor on XZ plane
+    //floor on XZ plane, relative to object size
     for (float i=-int(FIELD_LIMIT ); i<=int(FIELD_LIMIT); i+=UNIT_SIZE) {
         if(i==0)
             continue;
@@ -680,6 +679,7 @@ void drawGrid(){
     
     glEnd( );
     
+    //Write X, Y and Z along the respective axes, relative to object size
     drawText(maxVertices[0]*0.75, 0,0, "X");
     drawText(0,maxVertices[1]*0.75,0, "Y");
     drawText(0,0,maxVertices[2]*0.75, "Z");
@@ -726,6 +726,7 @@ void drawObject()
 {
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
+    
     switch (obj_mode) {
         case OBJ_POINT:
             objectAsPoints();
@@ -750,9 +751,9 @@ void drawObject()
 
 //------------Support functions------------
 
-//convert vector to string in format "float,float,float"
+//convert vector to string in format "float  float  float"
 string vectorToStr(float vec[3]){
-    return string(to_string(vec[0]) + "\n" + to_string(vec[1]) + "\n" + to_string(vec[2]) );
+    return string(to_string(vec[0]) + "  " + to_string(vec[1]) + "  " + to_string(vec[2]) );
 }
 
 
